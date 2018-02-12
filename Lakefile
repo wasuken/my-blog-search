@@ -1,0 +1,15 @@
+#|-*- mode:lisp -*-|#
+(in-package :cl-user)
+(defpackage :lake.user
+  (:use :cl :lake :cl-syntax)
+  (:shadowing-import-from :lake
+                          :directory))
+(in-package :lake.user)
+
+(use-syntax :interpol)
+ ;;; here follow your tasks...
+(task "test" ()
+      (ql:quickload '(:prove :dexador :plump :clss) :silent t)
+      (load #P"my-blog-search.asd")
+      (load #P"my-blog-search-test.asd")
+      (asdf:test-system :my-blog-search-test))
