@@ -1,17 +1,11 @@
 (in-package #:my-blog-search)
 
-;;; my-blog-archive-page
-(defparameter *kuso-blog-url* "http://mintblog.hatenablog.com/archive")
-
-
 ;;; 分離する意味あまりないかもしれない
 ;;; やっぱりデフォルトでSleep入れる
 (defun html-source (url &optional (sleep-sec 3))
   (cond (url
          (sleep sleep-sec)
          (plump:parse (dex:get url)))))
-
-(defparameter *kuso-blog-main-archive-source* (html-source *kuso-blog-url*))
 
 ;;; sourceからtag-strと一致するnodeを取得し、nodeのattr-nameの値を取得する。
 (defun attr-value-in-html-source (tag-str attr-name source)
@@ -46,3 +40,15 @@
     (mapcar #'(lambda (x) (plump:text
                            (aref (clss:select "div.entry-content" x) 0)))
             blog-all-html-sources)))
+
+;;; 集計。関数化する必要あったのか。
+(defun blog-aggregate (word-min-length)
+  (let* ((all-words (reduce #'append (mapcar #'igo:wakati (take *blog-all-content-lists* 80)) :initial-value '()))
+         (uniq-words (remove-duplicates (reduce #'append (mapcar #'igo:wakati
+                                                                 (take all-words 80))
+                                                :initial-value '()) :test #'string=)))
+    (remove-if #'(lambda (x) (< (length (car x)) word-min-length))
+             (sort (mapcar #'(lambda (word)
+                               (list word (count-if #'(lambda (x)
+                                                        (string= x word)) all-words)))
+                           uniq-words) #'> :key #'cadr))))
