@@ -9,7 +9,8 @@
 (use-syntax :interpol)
  ;;; here follow your tasks...
 (task "test" ()
-      (ql:quickload '(:prove :dexador :plump :clss :clgplot) :silent t)
+      (ql:quickload '(:prove :dexador :plump :clss :clgplot :igo) :silent t)
+      (igo:load-tagger "~/igo/ipadic/")
       (load #P"my-blog-search.asd")
       (load #P"my-blog-search-test.asd")
       (asdf:test-system :my-blog-search-test))
